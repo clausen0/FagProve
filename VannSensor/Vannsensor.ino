@@ -37,39 +37,39 @@ void skjerm(String text){
     lcd.clear();
     lcd.setCursor(0, 0);
 
-    //printer til skjermen hvilket nivå vannet er på
+    //printer til skjermen en basis text
     lcd.print("Vannnivå:");
     lcd.setCursor(0, 1);
 
-    //printer nivået som vannet er
+    //printer meldingen om statusen til vannet
     lcd.print(text);
 }
 
 void loop() {
-    //setter en bollsk stat på variablene for å få en true eller false verdi  
+    //setter en bollsk verdi på variablene for å få en true eller false verdi  
     bool vann25 = digitalRead(bryter25);
     bool vann50 = digitalRead(bryter50);
     bool vann75 = digitalRead(bryter75);
     bool vann100 = digitalRead(bryter100);
 
+    //sjekker om det er vann i koppen, hvis det ikke er starter pumpen.
     if (!vann25 && !vann50 && !vann75 && !vann100)
     {
         digitalWrite(motor, HIGH);
         skjerm("Pumpe Gar");
     }
+    //sjekker etter feil
     else{
         if ((!vann25 && (vann50 || vann75 || vann100)) || (!vann50 && (vann75 || vann100)) || (!vann75 && vann100))
         {
             skjerm("Feil");
             digitalWrite(motor, LOW);
         }
+        //hvis det er vann i koppen sjekker den nivået og displayer mengde
         else
         {
             skjerm(vann100 ? "100%" : vann75 ? "75%" : vann50 ? "50%" : vann25 ? "25%" : "0%");
             digitalWrite(motor, LOW);
         }
     }
-    
-
-    
 }
