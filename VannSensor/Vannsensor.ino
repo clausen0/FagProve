@@ -23,9 +23,6 @@ void setup() {
     pinMode(bryter100, INPUT);
 
     pinMode(motor, OUTPUT);
-    
-    // Print a message to the LCD.
-    lcd.print("hello, world!");
 }
 
 
@@ -38,7 +35,7 @@ void skjerm(String text){
     lcd.setCursor(0, 0);
 
     //printer til skjermen en basis text
-    lcd.print("Vannnivå:");
+    lcd.print("Vannnivaa:");
     lcd.setCursor(0, 1);
 
     //printer meldingen om statusen til vannet
@@ -56,7 +53,7 @@ void loop() {
     if (!vann25 && !vann50 && !vann75 && !vann100)
     {
         digitalWrite(motor, HIGH);
-        skjerm("Pumpe Gar");
+        skjerm("Pumpe Gaar");
     }
     //sjekker etter feil
     else{
@@ -69,7 +66,13 @@ void loop() {
         else
         {
             skjerm(vann100 ? "100%" : vann75 ? "75%" : vann50 ? "50%" : vann25 ? "25%" : "0%");
-            digitalWrite(motor, LOW);
+            // digitalWrite(motor, LOW);
+            //stopper pumpen når det er fult i koppen
+            if (vann100 == true)
+            {
+                digitalWrite(motor, LOW);
+            }
+            
         }
     }
 }
