@@ -28,6 +28,7 @@ void setup() {
     pinMode(bryter75, INPUT);
     pinMode(bryter100, INPUT);
 
+    //deffinerer motor variablen
     pinMode(motor, OUTPUT);
 }
 
@@ -77,7 +78,7 @@ void loop() {
         //hvis det er vann i koppen sjekker den nivået og displayer mengde
         else
         {  
-            //sjekker om det kommer endringer på last state som er under 3 sek
+            //sjekker om det kommer endringer på last state som er  3 sek
             if(!pumpen &&((!vann25 && sisteStat[0] != vann25) || (!vann50 && sisteStat[1] != vann50) || (!vann75 && sisteStat[2] != vann75) || (!vann100 && sisteStat[3] != vann100))){
                 //Sjekker om den sisteendingen øker sjappere enn Millis
                 if(sisteEndring > millis()){
