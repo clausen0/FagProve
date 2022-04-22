@@ -1,5 +1,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <DateTime.h>
  
 // Data wire is plugged into pin 2 on the Arduino
 #define ONE_WIRE_BUS 2
@@ -19,11 +20,23 @@ void setup(void)
 
   // Start up the library
   sensors.begin();
+
+  //dato start og sync
+  DateTime.sync(812868312);
 }
  
  
 void loop(void)
 {
+  if(DateTime.available()){
+    unsigned long prevtime = DateTime.now();
+    while (prevtime = DateTime.now())
+    {
+      DateTime.available();
+      digitalClockDisplay();
+    }
+   Serial.print(DateTime.Hour, DEC); 
+  }
   // call sensors.requestTemperatures() to issue a global temperature
   // request to all devices on the bus
   Serial.print(" Requesting temperatures...");
