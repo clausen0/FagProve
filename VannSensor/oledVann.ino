@@ -25,7 +25,9 @@ bool sisteStat[4] = {false, false, false, false};
 
 void setup()
 {
-    display.begin(SSD1306_SWITCHAPVCC, 0x3D);
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3D);
+
+    Serial.begin(9600);
 
     // leser av verdier på brytere
     pinMode(bryter25, INPUT);
@@ -47,16 +49,16 @@ void loop()
 
     bool pumpen = digitalRead(motor);
 
-    OLED.clearDisplay();
-    OLED.setTextSize(1);
-    OLED.setColor(WHITE);
-    OLED.setCursor(0, 0);
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.setCursor(0, 0);
 
     // sjekker om det er vann i koppen, hvis det ikke er starter pumpen.
     if (!vann25 && !vann50 && !vann75 && !vann100)
     {
         digitalWrite(motor, HIGH);
-        OLED.print("Pumpen går");
+        display.print("Pumpen gar");
     }
     // sjekker etter feil
     else
@@ -64,7 +66,7 @@ void loop()
         if ((!vann25 && (vann50 || vann75 || vann100)) || (!vann50 && (vann75 || vann100)) || (!vann75 && vann100))
         {
             digitalWrite(motor, LOW);
-            OLED.print("Feil i tanken");
+            display.print("Feil i tanken");
         }
         // hvis det er vann i koppen sjekker den nivået og displayer mengde
         else
@@ -79,34 +81,60 @@ void loop()
                     digitalWrite(motor, HIGH);
 
                     // viser til skjerm at det er uvalig bruk
-                    OLED.print("Uvanlig bruk av vann")
+                    display.print("Uvanlig bruk av vann");
 
                         // viser til skjermen at pumpen starter
-                        OLED.setCursor(1, 0);
-                    OLED.print("Starter Pumpen");
+                        display.setCursor(0, 10);
+                    display.print("Starter Pumpen");
+
+                    //printer til en seriel monitor fordi endinrg på skjem er for kjapp
+                    Serial.print("Uvanlig bruk");
                 }
 
                 //øker verdien på variablen siste endring, essensiell for at det skal funke med at den tømmes for fort
-                sisteEndring = millis() + 3000;
+                sisteEndring = millis() + 5000;
             }
             else
             {
-                OLED.print(vann100 ? "100%" : vann75 ? "75%"
+                if (vann25) //Lager en sirkel hvis det er et vann nivå på 25
+                {
+                    display.fillCircle(5, 32, 4, WHITE);
+                }
+                if (vann50) //Lager en sirkel hvis det er et vann nivå på 50
+                {
+                    display.fillCircle(15, 32, 4, WHITE);
+                }
+                if (vann75) //Lager en sirkel hvis det er et vann nivå på 75
+                {
+                    display.fillCircle(25, 32, 4, WHITE);
+                }
+                if (vann100) //Lager en sirkel hvis det er et vann nivå på 100
+                {
+                    display.fillCircle(35, 32, 4, WHITE);
+                }
+
+                //Sjekker hvilket vann nivå det er og displayer riktig nivå
+
+                display.print(vann100 ? "100%" : vann75 ? "75%"
                                           : vann50   ? "50%"
                                           : vann25   ? "25%"
                                                      : "0%");
-                // stopper pumpen når det er fult i koppen
-                if (vann100 == true)
+                // stopper pumpen når det er fult i koppen og pumpen går
+                if (pumpen && vann100 == true)
                 {
+                    display.setCursor(0, 50);
+                    display.setTextSize(1);
+                    display.print("Pumpe stoppet");
                     digitalWrite(motor, LOW);
                 }
             }
+
             sisteStat[0] = vann25;
             sisteStat[1] = vann50;
             sisteStat[2] = vann75;
             sisteStat[3] = vann100;
         }
     }
-    OLED.display();
-    delay(5000);
+    display.display();
+    delay(200);
 }
